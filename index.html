@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Manager</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+            text-align: center;
+        }
+
+        .box {
+            width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px;
+            background: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        li {
+            list-style: none;
+            background: #eee;
+            margin: 5px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .delete {
+            background: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🎓 Student Manager</h2>
+
+    <input id="name" placeholder="Name">
+    <input id="email" placeholder="Email">
+    <input id="year" placeholder="Year">
+    <input id="branch" placeholder="Branch">
+    <input id="roll" placeholder="Roll No">
+    <input id="mobile" placeholder="Mobile">
+
+    <button onclick="addStudent()">Add Student</button>
+
+    <ul id="list"></ul>
+</div>
+
+<script>
+const API = "http://localhost:5032/students"; // 🔥 update your port
+
+// Load students
+function loadStudents() {
+    fetch(API)
+    .then(res => res.json())
+    .then(data => {
+        let list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(s => {
+            let li = document.createElement("li");
+            li.innerHTML = `
+                ${s.name} (${s.branch}) 
+                <button class="delete" onclick="deleteStudent(${s.id})">Delete</button>
+            `;
+            list.appendChild(li);
+        });
+    });
+}
+
+// Add student
+function addStudent() {
+    fetch(API, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            name: name.value,
+            email: email.value,
+            year: parseInt(year.value),
+            branch: branch.value,
+            rollNo: roll.value,
+            mobile: mobile.value
+        })
+    })
+    .then(res => res.text())
+    .then(msg => {
+        alert(msg);
+        loadStudents();
+    });
+}
+
+// Delete student
+function deleteStudent(id) {
+    fetch(`${API}/${id}`, {
+        method: "DELETE"
+    }).then(() => loadStudents());
+}
+
+// Auto load
+loadStudents();
+</script>
+
+</body>
+</html>
